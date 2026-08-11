@@ -1,0 +1,20 @@
+[
+  {
+    "id": "G_k9_example",
+    "label": "G \u00b7 K=9 example",
+    "aa": "G",
+    "n": 2809
+  },
+  {
+    "id": "A_k9_example",
+    "label": "A \u00b7 K=9 example",
+    "aa": "A",
+    "n": 2765
+  },
+  {
+    "id": "E_k9_example",
+    "label": "E \u00b7 K=9 example",
+    "aa": "E",
+    "n": 1847
+  }
+]

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StairDetect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;650&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>StairDetect</h1>
+        <p>
+          Nanopore current step segmentation — <strong>Split → Merge → End</strong>.
+        </p>
+        <span class="badge">Pure frontend · JS port of StairDetect</span>
+      </header>
+
+      <div class="layout">
+        <aside class="panel">
+          <h2>Input</h2>
+          <label class="field">
+            Example
+            <select id="example"></select>
+          </label>
+          <label class="field">
+            Or upload CSV (<code>I_I0</code>)
+            <input id="file" type="file" accept=".csv,text/csv" />
+          </label>
+          <div id="file-label">No file — using example</div>
+          <div class="btn-row">
+            <button type="button" class="secondary" id="clear-file">Clear upload</button>
+          </div>
+
+          <h2 style="margin-top: 1.1rem">Parameters</h2>
+          <label class="field">
+            <span class="row"><span>skip_ratio</span><span id="skip-val">0.10</span></span>
+            <input id="skip" type="range" min="0" max="0.3" step="0.01" value="0.1" />
+          </label>
+          <label class="field">
+            <span class="row"><span>K_split</span><span id="ksplit-val">3.0</span></span>
+            <input id="ksplit" type="range" min="1" max="6" step="0.1" value="3.0" />
+          </label>
+          <label class="field">
+            <span class="row"><span>K_merge</span><span id="kmerge-val">5.5</span></span>
+            <input id="kmerge" type="range" min="2" max="10" step="0.1" value="5.5" />
+          </label>
+          <label class="field">
+            <span class="row"><span>K_end</span><span id="kend-val">2.5</span></span>
+            <input id="kend" type="range" min="1" max="5" step="0.1" value="2.5" />
+          </label>
+          <label class="check">
+            <input id="endenable" type="checkbox" checked />
+            end refinement
+          </label>
+
+          <div class="btn-row">
+            <button type="button" id="run">Run</button>
+          </div>
+          <div id="status">Ready.</div>
+        </aside>
+
+        <main class="panel">
+          <h2>Stages</h2>
+          <div class="tabs">
+            <button type="button" class="tab" data-stage="raw">Raw</button>
+            <button type="button" class="tab" data-stage="split">After split</button>
+            <button type="button" class="tab" data-stage="merge">After merge</button>
+            <button type="button" class="tab active" data-stage="final">Final</button>
+          </div>
+          <div class="plot-box">
+            <canvas id="plot"></canvas>
+          </div>
+
+          <h2 style="margin-top: 1rem">Level table (final)</h2>
+          <div class="table-wrap">
+            <table id="level-table">
+              <thead>
+                <tr>
+                  <th>plateau</th>
+                  <th>Median current</th>
+                  <th>Duration</th>
+                  <th>delta</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </main>
+      </div>
+
+      <footer>
+        Algorithm mirrors <code>StairDetect</code>. Open this folder with any static
+        file server, or open <code>index.html</code> directly (examples are embedded).
+      </footer>
+    </div>
+
+    <script src="js/detect.js"></script>
+    <script src="js/examples-data.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>

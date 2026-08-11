@@ -1,0 +1,15 @@
+.DS_Store
+Thumbs.db
+*.pyc
+__pycache__/
+*.egg-info/
+.eggs/
+dist/
+build/
+.ipynb_checkpoints/
+*.pkl
+.venv/
+venv/
+.env
+.idea/
+.vscode/

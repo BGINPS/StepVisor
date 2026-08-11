@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stairdetect"
+version = "0.1.0"
+description = "StairDetect: split–merge plateau detection for nanopore peptide current"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Jiang Shizhe" }]
+dependencies = ["numpy>=1.20"]
+
+[project.urls]
+Homepage = "https://github.com/JiangShizhe/Stair-Detect"
+Demo = "https://JiangShizhe.github.io/Stair-Detect/"
+
+[tool.setuptools.packages.find]
+include = ["stairdetect*"]
