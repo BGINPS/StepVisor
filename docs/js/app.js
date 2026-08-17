@@ -72,15 +72,8 @@
   }
 
   function readParams() {
-    // v1.0: fixed manuscript defaults (no UI controls)
-    const d = (window.StepVisor && window.StepVisor.DEFAULTS) || {};
-    return {
-      skipRatio: d.skipRatio,
-      kSplit: d.kSplit,
-      kMerge: d.kMerge,
-      kEnd: d.kEnd,
-      endEnable: d.endEnable,
-    };
+    // v1.0: always use built-in defaults (do not pass undefined overrides)
+    return Object.assign({}, (window.StepVisor && window.StepVisor.DEFAULTS) || {});
   }
 
   function downsample(y, maxPts) {
@@ -98,8 +91,9 @@
   function drawPlot(canvas, tail, stage, title) {
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
+    const w = canvas.clientWidth || canvas.parentElement.clientWidth || 640;
+    const h = canvas.clientHeight || canvas.parentElement.clientHeight || 260;
+    if (w < 2 || h < 2) return;
     canvas.width = Math.floor(w * dpr);
     canvas.height = Math.floor(h * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -223,6 +217,12 @@
   function run() {
     $("status").textContent = "Running…";
     try {
+      if (!window.StepVisor || typeof window.StepVisor.detectWithStages !== "function") {
+        throw new Error("StepVisor failed to load (detect.js)");
+      }
+      if (!(window.STAIR_EXAMPLES || []).length && !(uploadedSignal && uploadedSignal.length)) {
+        throw new Error("No example data loaded (examples-data.js)");
+      }
       const signal = currentSignal();
       const out = window.StepVisor.detectWithStages(signal, readParams());
       lastResult = out;
@@ -237,7 +237,12 @@
         endNote;
       renderTable(out.table);
       const active = document.querySelector(".tab.active");
-      showStage(active ? active.dataset.stage : "final");
+      const stage = active ? active.dataset.stage : "final";
+      // draw after layout so canvas has non-zero size
+      requestAnimationFrame(() => {
+        showStage(stage);
+        requestAnimationFrame(() => showStage(stage));
+      });
     } catch (e) {
       $("status").textContent = "Error: " + e.message;
       console.error(e);
@@ -245,44 +250,61 @@
   }
 
   function init() {
-    fillExamples();
-    $("file").addEventListener("change", (ev) => {
-      const f = ev.target.files && ev.target.files[0];
-      if (!f) {
-        uploadedSignal = null;
-        $("file-label").textContent = "No file";
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          uploadedSignal = parseCsvText(String(reader.result));
-          $("file-label").textContent = `${f.name} (${uploadedSignal.length} pts)`;
-        } catch (e) {
+    try {
+      fillExamples();
+      $("file").addEventListener("change", (ev) => {
+        const f = ev.target.files && ev.target.files[0];
+        if (!f) {
           uploadedSignal = null;
-          $("file-label").textContent = "Parse error";
-          $("status").textContent = "Error: " + e.message;
+          $("file-label").textContent = "No file";
+          return;
         }
-      };
-      reader.readAsText(f);
-    });
-    $("clear-file").addEventListener("click", () => {
-      uploadedSignal = null;
-      $("file").value = "";
-      $("file-label").textContent = "No file — using example";
-    });
-    $("run").addEventListener("click", run);
-    document.querySelectorAll(".tab").forEach((b) => {
-      b.addEventListener("click", () => showStage(b.dataset.stage));
-    });
-    window.addEventListener("resize", () => {
-      if (lastResult) {
-        const active = document.querySelector(".tab.active");
-        showStage(active ? active.dataset.stage : "final");
-      }
-    });
-    run();
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            uploadedSignal = parseCsvText(String(reader.result));
+            $("file-label").textContent = `${f.name} (${uploadedSignal.length} pts)`;
+            run();
+          } catch (e) {
+            uploadedSignal = null;
+            $("file-label").textContent = "Parse error";
+            $("status").textContent = "Error: " + e.message;
+          }
+        };
+        reader.readAsText(f);
+      });
+      $("clear-file").addEventListener("click", () => {
+        uploadedSignal = null;
+        $("file").value = "";
+        $("file-label").textContent = "No file — using example";
+        run();
+      });
+      $("example").addEventListener("change", () => {
+        uploadedSignal = null;
+        $("file").value = "";
+        $("file-label").textContent = "No file — using example";
+        run();
+      });
+      $("run").addEventListener("click", run);
+      document.querySelectorAll(".tab").forEach((b) => {
+        b.addEventListener("click", () => showStage(b.dataset.stage));
+      });
+      window.addEventListener("resize", () => {
+        if (lastResult) {
+          const active = document.querySelector(".tab.active");
+          showStage(active ? active.dataset.stage : "final");
+        }
+      });
+      run();
+    } catch (e) {
+      $("status").textContent = "Error: " + e.message;
+      console.error(e);
+    }
   }
 
-  document.addEventListener("DOMContentLoaded", init);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();
