@@ -6,7 +6,7 @@
 |---|---|
 | **Software** | **StepVisor v1.0** (algorithm + browser visualization) |
 | **Method name (manuscript)** | StairDetect *(paper text; software brand is StepVisor)* |
-| **Repository** | https://github.com/JiangShizhe/StepVisor *(rename from `Stair-Detect` if not yet applied)* |
+| **Repository** | https://github.com/JiangShizhe/StepVisor |
 | **Interactive demo** | https://JiangShizhe.github.io/StepVisor/ |
 | **Version** | **1.0.0** |
 
