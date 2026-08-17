@@ -1,10 +1,10 @@
 cff-version: 1.2.0
-message: "If you use StairDetect, please cite this software and the associated manuscript."
-title: "StairDetect: split–merge plateau detection for nanopore peptide current"
-version: "0.1.0"
+message: "If you use StepVisor, please cite this software and the associated manuscript."
+title: "StepVisor v1.0: split–merge plateau detection for nanopore peptide current"
+version: "1.0.0"
 authors:
   - family-names: Jiang
     given-names: Shizhe
 license: MIT
-repository-code: "https://github.com/JiangShizhe/Stair-Detect"
-url: "https://JiangShizhe.github.io/Stair-Detect/"
+repository-code: "https://github.com/JiangShizhe/StepVisor"
+url: "https://JiangShizhe.github.io/StepVisor/"

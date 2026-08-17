@@ -1,5 +1,5 @@
 /**
- * StairDetect — JS port of StairDetect (Split → Merge → End).
+ * StepVisor v1.0 — JS port (Split → Merge → End).
  * Pure browser; no server required.
  */
 (function (global) {
@@ -366,9 +366,11 @@
     };
   }
 
-  global.StairDetect = {
+  const api = {
     DEFAULTS,
     detectWithStages,
     median,
   };
+  global.StepVisor = api;
+  global.StairDetect = api; // legacy alias
 })(typeof window !== "undefined" ? window : globalThis);

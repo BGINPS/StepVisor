@@ -1,13 +1,14 @@
-# StairDetect
+# StepVisor v1.0
 
-**StairDetect** is a split–merge algorithm for **plateau detection** in nanopore peptide ionic-current signals. It converts a continuous current trace into a piecewise-constant plateau representation (candidate-boundary generation → boundary refinement → optional end refinement).
+**StepVisor** is the software release (algorithm + interactive demo) for **plateau detection** in nanopore peptide ionic-current signals. It converts a continuous current trace into a piecewise-constant plateau representation (candidate-boundary generation → boundary refinement → optional end refinement).
 
 | | |
 |---|---|
-| **Software / method** | StairDetect |
-| **Repository** | https://github.com/JiangShizhe/Stair-Detect |
-| **Interactive demo** | https://JiangShizhe.github.io/Stair-Detect/ |
-| **Version** | 0.1.0 (initial public layout) |
+| **Software** | **StepVisor v1.0** (algorithm + browser visualization) |
+| **Method name (manuscript)** | StairDetect *(paper text; software brand is StepVisor)* |
+| **Repository** | https://github.com/JiangShizhe/StepVisor *(rename from `Stair-Detect` if not yet applied)* |
+| **Interactive demo** | https://JiangShizhe.github.io/StepVisor/ |
+| **Version** | **1.0.0** |
 
 > This repository provides the reference implementation and browser demo for manuscript reproducibility. Full analysis pipelines and raw sequencing datasets are maintained separately.
 
@@ -28,14 +29,14 @@ Default parameters (see Table S1 in the manuscript Supplementary Note):
 ## Quick start (Python)
 
 ```bash
-git clone https://github.com/JiangShizhe/Stair-Detect.git
-cd Stair-Detect
+git clone https://github.com/JiangShizhe/StepVisor.git
+cd StepVisor
 python -m pip install -e .
 python examples/run_example.py
 # or: python examples/run_example.py examples/data/E_k9_example.csv
 ```
 
-Minimal API:
+Minimal API (Python package import name remains `stairdetect` for compatibility):
 
 ```python
 import numpy as np
@@ -54,13 +55,13 @@ For a full read object (`signal` + `OpenPore` + optional `window`), use `detect_
 
 ## Interactive browser demo
 
-**Online:** https://JiangShizhe.github.io/Stair-Detect/  
+**Online:** https://JiangShizhe.github.io/StepVisor/  
 (GitHub Pages serves the `docs/` folder.)
 
 **Local:**
 
 ```bash
-cd Stair-Detect
+cd StepVisor
 python -m http.server 8080 --directory docs
 ```
 
@@ -93,12 +94,12 @@ signal,OpenPore
 ## Repository layout
 
 ```
-stairdetect/          # Python package (reference implementation)
+stairdetect/          # Python package (reference implementation; import name unchanged)
   detect.py
 examples/
   data/               # small CSV examples
   run_example.py
-docs/                 # browser demo (GitHub Pages)
+docs/                 # browser demo (GitHub Pages) — StepVisor v1.0 UI
   index.html
   css/ js/ examples/
 LICENSE
@@ -112,7 +113,7 @@ pyproject.toml
 
 Please cite the associated manuscript when available, and this software release:
 
-- Repository: https://github.com/JiangShizhe/Stair-Detect  
+- Repository: https://github.com/JiangShizhe/StepVisor  
 - See `CITATION.cff` (Zenodo DOI to be added with the archival release)
 
 ---

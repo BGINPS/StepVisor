@@ -1,4 +1,4 @@
-/* StairDetect static demo UI */
+/* StepVisor v1.0 static demo UI */
 (function () {
   "use strict";
 
@@ -229,7 +229,7 @@
     $("status").textContent = "Running…";
     try {
       const signal = currentSignal();
-      const out = window.StairDetect.detectWithStages(signal, readParams());
+      const out = window.StepVisor.detectWithStages(signal, readParams());
       lastResult = out;
       let endNote = "";
       if (out.endAudit) {
