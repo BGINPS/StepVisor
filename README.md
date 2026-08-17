@@ -68,8 +68,8 @@ python -m http.server 8080 --directory docs
 Open http://127.0.0.1:8080
 
 1. Load a built-in example or upload a CSV  
-2. Adjust parameters if needed  
-3. Run and inspect **Raw → After split → After merge → Final**
+2. Click **Run** (v1.0 uses fixed defaults; no parameter panel)  
+3. Inspect **Raw → After split → After merge → Final**
 
 ### CSV input
 

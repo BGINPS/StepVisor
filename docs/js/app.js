@@ -72,20 +72,15 @@
   }
 
   function readParams() {
+    // v1.0: fixed manuscript defaults (no UI controls)
+    const d = (window.StepVisor && window.StepVisor.DEFAULTS) || {};
     return {
-      skipRatio: Number($("skip").value),
-      kSplit: Number($("ksplit").value),
-      kMerge: Number($("kmerge").value),
-      kEnd: Number($("kend").value),
-      endEnable: $("endenable").checked,
+      skipRatio: d.skipRatio,
+      kSplit: d.kSplit,
+      kMerge: d.kMerge,
+      kEnd: d.kEnd,
+      endEnable: d.endEnable,
     };
-  }
-
-  function syncLabels() {
-    $("skip-val").textContent = Number($("skip").value).toFixed(2);
-    $("ksplit-val").textContent = Number($("ksplit").value).toFixed(1);
-    $("kmerge-val").textContent = Number($("kmerge").value).toFixed(1);
-    $("kend-val").textContent = Number($("kend").value).toFixed(1);
   }
 
   function downsample(y, maxPts) {
@@ -251,10 +246,6 @@
 
   function init() {
     fillExamples();
-    syncLabels();
-    ["skip", "ksplit", "kmerge", "kend"].forEach((id) => {
-      $(id).addEventListener("input", syncLabels);
-    });
     $("file").addEventListener("change", (ev) => {
       const f = ev.target.files && ev.target.files[0];
       if (!f) {
