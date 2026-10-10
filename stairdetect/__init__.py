@@ -1,4 +1,4 @@
-"""StairDetect: split–merge plateau detection for nanopore peptide current."""
+"""StepVisor: split–merge plateau detection for nanopore peptide current."""
 
 from .detect import (
     BIC_SCALE,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Minimal example: run StairDetect on a CSV with column I_I0."""
+"""Minimal example: run StepVisor on a CSV with column I_I0."""
 
 from __future__ import annotations
 

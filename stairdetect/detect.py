@@ -1,9 +1,9 @@
 """
-StairDetect core: plateau detection for nanopore peptide current.
+StepVisor core: plateau detection for nanopore peptide current.
 
 Pipeline: preprocess → split → boundary refinement (merge) → optional end refinement.
 
-This module is the reference Python implementation accompanying the StairDetect
+This module is the reference Python implementation accompanying the StepVisor
 manuscript (Methods / Supplementary Note S1).
 """
 
