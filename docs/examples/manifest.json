@@ -16,5 +16,131 @@
     "label": "E \u00b7 K=9 example",
     "aa": "E",
     "n": 1847
+  },
+  {
+    "id": "hand_R",
+    "label": "R \u00b7 hand-picked K=9",
+    "aa": "R",
+    "n": 2704
+  },
+  {
+    "id": "hand_H",
+    "label": "H \u00b7 hand-picked K=9",
+    "aa": "H",
+    "n": 2922
+  },
+  {
+    "id": "hand_K",
+    "label": "K \u00b7 hand-picked K=9",
+    "aa": "K",
+    "n": 3366
+  },
+  {
+    "id": "hand_D",
+    "label": "D \u00b7 hand-picked K=9",
+    "aa": "D",
+    "n": 2856
+  },
+  {
+    "id": "hand_E",
+    "label": "E \u00b7 hand-picked K=9",
+    "aa": "E",
+    "n": 3845
+  },
+  {
+    "id": "hand_C",
+    "label": "C \u00b7 hand-picked K=9",
+    "aa": "C",
+    "n": 3341
+  },
+  {
+    "id": "hand_N",
+    "label": "N \u00b7 hand-picked K=9",
+    "aa": "N",
+    "n": 1637
+  },
+  {
+    "id": "hand_Q",
+    "label": "Q \u00b7 hand-picked K=9",
+    "aa": "Q",
+    "n": 3197
+  },
+  {
+    "id": "hand_S",
+    "label": "S \u00b7 hand-picked K=9",
+    "aa": "S",
+    "n": 1757
+  },
+  {
+    "id": "hand_T",
+    "label": "T \u00b7 hand-picked K=9",
+    "aa": "T",
+    "n": 2144
+  },
+  {
+    "id": "hand_A",
+    "label": "A \u00b7 hand-picked K=9",
+    "aa": "A",
+    "n": 4250
+  },
+  {
+    "id": "hand_G",
+    "label": "G \u00b7 hand-picked K=9",
+    "aa": "G",
+    "n": 3278
+  },
+  {
+    "id": "hand_I",
+    "label": "I \u00b7 hand-picked K=9",
+    "aa": "I",
+    "n": 2021
+  },
+  {
+    "id": "hand_L",
+    "label": "L \u00b7 hand-picked K=9",
+    "aa": "L",
+    "n": 2424
+  },
+  {
+    "id": "hand_M",
+    "label": "M \u00b7 hand-picked K=9",
+    "aa": "M",
+    "n": 3817
+  },
+  {
+    "id": "hand_P",
+    "label": "P \u00b7 hand-picked K=9",
+    "aa": "P",
+    "n": 3934
+  },
+  {
+    "id": "hand_V",
+    "label": "V \u00b7 hand-picked K=9",
+    "aa": "V",
+    "n": 1755
+  },
+  {
+    "id": "hand_F",
+    "label": "F \u00b7 hand-picked K=9",
+    "aa": "F",
+    "n": 4344
+  },
+  {
+    "id": "hand_W",
+    "label": "W \u00b7 hand-picked K=9",
+    "aa": "W",
+    "n": 3770
+  },
+  {
+    "id": "hand_Y",
+    "label": "Y \u00b7 hand-picked K=9",
+    "aa": "Y",
+    "n": 3680
+  },
+  {
+    "id": "fig2_T_panel",
+    "label": "T \u00b7 Fig.2 panel example",
+    "aa": "T",
+    "n": 2707
   }
 ]

@@ -1,0 +1,22 @@
+id	aa	read_id	csv	source
+hand_A	A	channel15_Read_0_111.24~111.32_33371605-33396187	hand_A.csv	20aa_hand/selected_20_manifest.tsv
+hand_C	C	channel21_Read_0_32.71~32.78_9812363-9833535	hand_C.csv	20aa_hand/selected_20_manifest.tsv
+hand_D	D	channel2_Read_0_46.87~46.94_14062121-14080604	hand_D.csv	20aa_hand/selected_20_manifest.tsv
+hand_E	E	channel96_Read_0_111.82~111.92_33545715-33574657	hand_E.csv	20aa_hand/selected_20_manifest.tsv
+hand_F	F	channel26_Read_0_96.01~96.10_28801536-28830917	hand_F.csv	20aa_hand/selected_20_manifest.tsv
+hand_G	G	channel6_Read_0_7.44~7.54_2232958-2262181	hand_G.csv	20aa_hand/selected_20_manifest.tsv
+hand_H	H	channel9_Read_0_56.04~56.13_16810736-16840011	hand_H.csv	20aa_hand/selected_20_manifest.tsv
+hand_I	I	channel20_Read_0_78.03~78.11_23408959-23433683	hand_I.csv	20aa_hand/selected_20_manifest.tsv
+hand_K	K	channel1_Read_0_92.01~92.08_27602517-27624992	hand_K.csv	20aa_hand/selected_20_manifest.tsv
+hand_L	L	channel34_Read_0_9.72~9.78_2915403-2934696	hand_L.csv	20aa_hand/selected_20_manifest.tsv
+hand_M	M	channel3_Read_0_23.82~23.90_7146205-7170385	hand_M.csv	20aa_hand/selected_20_manifest.tsv
+hand_N	N	channel3_Read_0_3.75~3.82_1124919-1146462	hand_N.csv	20aa_hand/selected_20_manifest.tsv
+hand_P	P	channel5_Read_0_83.68~83.77_25104594-25130718	hand_P.csv	20aa_hand/selected_20_manifest.tsv
+hand_Q	Q	channel15_Read_0_49.89~49.95_14965835-14986307	hand_Q.csv	20aa_hand/selected_20_manifest.tsv
+hand_R	R	channel20_Read_0_48.84~48.92_14653320-14674552	hand_R.csv	20aa_hand/selected_20_manifest.tsv
+hand_S	S	channel15_Read_0_34.45~34.49_10333533-10347407	hand_S.csv	20aa_hand/selected_20_manifest.tsv
+hand_T	T	channel1_Read_0_55.58~55.65_16673606-16695905	hand_T.csv	20aa_hand/selected_20_manifest.tsv
+hand_V	V	channel4_Read_0_64.88~64.94_19465281-19482162	hand_V.csv	20aa_hand/selected_20_manifest.tsv
+hand_W	W	channel9_Read_0_45.72~45.79_13714753-13737487	hand_W.csv	20aa_hand/selected_20_manifest.tsv
+hand_Y	Y	channel1_Read_0_107.00~107.11_32099408-32132118	hand_Y.csv	20aa_hand/selected_20_manifest.tsv
+fig2_T_panel	T	channel166_Read_0_31.29~31.37_9386347-9412256	fig2_T_panel.csv	fig2.02 EXAMPLE_ID channel166_Read_0_31.29~31.37_9386347-9412256
