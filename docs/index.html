@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -16,66 +16,78 @@
     <div class="wrap">
       <header>
         <h1>StepVisor <span style="font-weight:500;font-size:0.72em;opacity:0.75">v1.0</span></h1>
-        <p>
-          Nanopore current step segmentation — <strong>Split → Merge → End</strong>.
-        </p>
-        <span class="badge">Pure frontend · StepVisor v1.0 (algorithm + demo)</span>
       </header>
 
       <div class="layout">
-        <aside class="panel">
-          <h2>Input</h2>
-          <label class="field">
-            Example
-            <select id="example"></select>
-          </label>
-          <label class="field">
-            Or upload CSV (<code>I_I0</code>)
-            <input id="file" type="file" accept=".csv,text/csv" />
-          </label>
-          <div id="file-label">No file — using example</div>
-          <div class="btn-row">
-            <button type="button" class="secondary" id="clear-file">Clear upload</button>
-          </div>
+        <!-- Top: Input 1/3 | Step table 2/3 · Bottom: Stages full width -->
+        <div class="top-row">
+          <aside class="panel input-bar">
+            <h2>Input</h2>
+            <div class="input-stack">
+              <label class="field field-example">
+                Example
+                <select id="example"></select>
+              </label>
+              <div class="field field-file">
+                <span class="field-label">Or upload CSV (<code>I_I0</code>)</span>
+                <div class="file-picker">
+                  <input id="file" type="file" accept=".csv,text/csv" />
+                  <label for="file" class="file-btn">Choose file</label>
+                  <span id="file-chosen">No file chosen</span>
+                </div>
+              </div>
+              <div class="input-actions">
+                <div id="file-label">No file — using example</div>
+                <div class="btn-row">
+                  <button type="button" class="secondary" id="clear-file">Clear upload</button>
+                  <button type="button" id="run">Run</button>
+                </div>
+              </div>
+            </div>
+          </aside>
 
-          <div class="btn-row" style="margin-top: 1.1rem">
-            <button type="button" id="run">Run</button>
-          </div>
-          <div id="status">Ready.</div>
-        </aside>
+          <section class="panel level-mid">
+            <div class="level-head">
+              <h2>Step table</h2>
+              <button type="button" class="secondary" id="download-csv" title="Download step table as CSV">
+                Download CSV
+              </button>
+            </div>
+            <div class="table-wrap">
+              <table id="level-table">
+                <thead>
+                  <tr>
+                    <th>plateau</th>
+                    <th>Median current</th>
+                    <th>Duration</th>
+                    <th>delta</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
 
-        <main class="panel">
-          <h2>Stages</h2>
-          <div class="tabs">
-            <button type="button" class="tab" data-stage="raw">Raw</button>
-            <button type="button" class="tab" data-stage="split">After split</button>
-            <button type="button" class="tab" data-stage="merge">After merge</button>
-            <button type="button" class="tab active" data-stage="final">Final</button>
+        <main class="panel stage-panel">
+          <div class="stage-head">
+            <h2>Stages</h2>
+            <div class="tabs">
+              <button type="button" class="tab" data-stage="raw">Raw</button>
+              <button type="button" class="tab" data-stage="split">After split</button>
+              <button type="button" class="tab" data-stage="merge">After merge</button>
+              <button type="button" class="tab active" data-stage="final">Final</button>
+            </div>
           </div>
           <div class="plot-box">
             <canvas id="plot"></canvas>
-          </div>
-
-          <h2 style="margin-top: 1rem">Level table (final)</h2>
-          <div class="table-wrap">
-            <table id="level-table">
-              <thead>
-                <tr>
-                  <th>plateau</th>
-                  <th>Median current</th>
-                  <th>Duration</th>
-                  <th>delta</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
           </div>
         </main>
       </div>
 
       <footer>
         Algorithm &amp; demo: <strong>StepVisor v1.0</strong>. Open this folder with any static
-        file server, or open <code>index.html</code> directly (examples are embedded).
+        file server, or open <code>index.html</code> directly.
       </footer>
     </div>
 
