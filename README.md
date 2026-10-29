@@ -69,7 +69,8 @@ Open http://127.0.0.1:8080
 
 1. Load a built-in example or upload a CSV  
 2. Click **Run** (v1.0 uses fixed defaults; no parameter panel)  
-3. Inspect **Raw → After split → After merge → Final**
+3. Inspect **Raw → After split → After merge → Final → Aligned**
+   (`Aligned` = H1→0.3 height scaling + equal-width plateau index, for cross-read shape comparison)
 
 ### CSV input
 

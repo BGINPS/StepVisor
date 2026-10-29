@@ -162,6 +162,213 @@
     return { x, y: yy };
   }
 
+  const H1_ANCHOR = 0.3;
+  const N_PER_STAIR = 80;
+
+  /** Resample each plateau segment to equal length (paper Fig2D equal-width warp). */
+  function warpByTransitions(y, transitions, nPerStair) {
+    const n = nPerStair || N_PER_STAIR;
+    const trans = (transitions || []).map((t) => Math.floor(t));
+    if (trans.length < 2) return Array.from(y);
+    const xOut = [];
+    for (let i = 0; i < n; i++) xOut.push(n === 1 ? 0 : i / (n - 1));
+    const pieces = [];
+    for (let s = 0; s < trans.length - 1; s++) {
+      const a = trans[s];
+      const b = trans[s + 1];
+      const seg = y.slice(a, b);
+      if (!seg.length) {
+        for (let i = 0; i < n; i++) pieces.push(NaN);
+        continue;
+      }
+      if (seg.length === 1) {
+        for (let i = 0; i < n; i++) pieces.push(seg[0]);
+        continue;
+      }
+      const xIn = [];
+      for (let i = 0; i < seg.length; i++) xIn.push(i / (seg.length - 1));
+      for (let i = 0; i < n; i++) {
+        const t = xOut[i];
+        let j = 0;
+        while (j < xIn.length - 2 && xIn[j + 1] < t) j++;
+        const t0 = xIn[j];
+        const t1 = xIn[j + 1];
+        const w = t1 === t0 ? 0 : (t - t0) / (t1 - t0);
+        pieces.push(seg[j] * (1 - w) + seg[j + 1] * w);
+      }
+    }
+    return pieces;
+  }
+
+  /**
+   * H1→0.3 height scale + equal-width plateau index on x.
+   * X spans [0.5, K+0.5] so tick i sits at the center of plateau i.
+   */
+  function buildAlignedView(tail, stage, opts) {
+    const nPer = (opts && opts.nPerStair) || N_PER_STAIR;
+    const m = (opts && opts.h1Anchor) || H1_ANCHOR;
+    const levels = stage.levels || [];
+    let h1 = levels.length ? Number(levels[0]) : NaN;
+    if (!Number.isFinite(h1) || h1 === 0) {
+      const n = Math.max(1, Math.floor(tail.length / 20));
+      let s = 0;
+      for (let i = 0; i < n; i++) s += tail[i];
+      h1 = s / n;
+    }
+    const scale = m / h1;
+    const stairArr = Array.isArray(stage.stair)
+      ? stage.stair
+      : Array.from(stage.stair || []);
+    const rawA = Array.from(tail, (v) => v * scale);
+    const stairA = stairArr.map((v) => v * scale);
+    const trans =
+      stage.transitions && stage.transitions.length >= 2
+        ? stage.transitions
+        : [0, tail.length];
+    const rawW = warpByTransitions(rawA, trans, nPer);
+    const stairW = warpByTransitions(stairA, trans, nPer);
+    const k = Math.max(Number(stage.stairNum) || 1, 1);
+    const N = rawW.length;
+    const x = [];
+    for (let i = 0; i < N; i++) {
+      x.push(N === 1 ? 1 : 0.5 + (i / (N - 1)) * k);
+    }
+    return { x, raw: rawW, stair: stairW, k, h1, m, nPer };
+  }
+
+  function drawAlignedPlot(canvas, aligned, title) {
+    const ctx = canvas.getContext("2d");
+    const dpr = window.devicePixelRatio || 1;
+    const parent = canvas.parentElement;
+    let w = canvas.clientWidth || (parent && parent.clientWidth) || 0;
+    let h = canvas.clientHeight || (parent && parent.clientHeight) || 0;
+    if (w < 2 || h < 2) {
+      if (parent) {
+        parent.style.minHeight = "280px";
+        w = parent.clientWidth || 640;
+        h = parent.clientHeight || 280;
+      } else {
+        w = 640;
+        h = 280;
+      }
+    }
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    const pad = { l: 52, r: 12, t: 28, b: 36 };
+    const plotW = w - pad.l - pad.r;
+    const plotH = h - pad.t - pad.b;
+
+    let ymin = Infinity;
+    let ymax = -Infinity;
+    for (const v of aligned.raw) {
+      if (Number.isFinite(v) && v < ymin) ymin = v;
+      if (Number.isFinite(v) && v > ymax) ymax = v;
+    }
+    for (const v of aligned.stair) {
+      if (Number.isFinite(v) && v < ymin) ymin = v;
+      if (Number.isFinite(v) && v > ymax) ymax = v;
+    }
+    if (!Number.isFinite(ymin) || !Number.isFinite(ymax)) {
+      ymin = 0;
+      ymax = 1;
+    }
+    const dy = ymax - ymin || 1e-6;
+    ymin -= 0.05 * dy;
+    ymax += 0.05 * dy;
+
+    const xMin = 0.5;
+    const xMax = aligned.k + 0.5;
+    const X = (xv) => pad.l + ((xv - xMin) / (xMax - xMin || 1)) * plotW;
+    const Y = (v) => pad.t + ((ymax - v) / (ymax - ymin)) * plotH;
+
+    ctx.strokeStyle = "#d0d4d8";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pad.l, pad.t);
+    ctx.lineTo(pad.l, pad.t + plotH);
+    ctx.lineTo(pad.l + plotW, pad.t + plotH);
+    ctx.stroke();
+
+    // plateau boundaries at i+0.5
+    ctx.strokeStyle = "rgba(60,70,80,0.28)";
+    for (let i = 1; i < aligned.k; i++) {
+      const xb = i + 0.5;
+      ctx.beginPath();
+      ctx.moveTo(X(xb), pad.t);
+      ctx.lineTo(X(xb), pad.t + plotH);
+      ctx.stroke();
+    }
+
+    // ticks at plateau centers
+    ctx.fillStyle = "#5a6570";
+    ctx.font = "12px 'IBM Plex Sans', system-ui, sans-serif";
+    ctx.textAlign = "center";
+    const tickStep = aligned.k > 12 ? 2 : 1;
+    for (let i = 1; i <= aligned.k; i += tickStep) {
+      const px = X(i);
+      ctx.strokeStyle = "#d0d4d8";
+      ctx.beginPath();
+      ctx.moveTo(px, pad.t + plotH);
+      ctx.lineTo(px, pad.t + plotH + 4);
+      ctx.stroke();
+      ctx.fillText(String(i), px, pad.t + plotH + 16);
+    }
+    ctx.textAlign = "left";
+
+    ctx.fillStyle = "#1a1f24";
+    ctx.font = "600 15px 'IBM Plex Sans', system-ui, sans-serif";
+    ctx.fillText(title, pad.l, 20);
+    ctx.font = "13px 'IBM Plex Sans', system-ui, sans-serif";
+    ctx.fillStyle = "#5a6570";
+    ctx.fillText("plateau index", pad.l + plotW / 2 - 40, h - 8);
+    ctx.save();
+    ctx.translate(14, pad.t + plotH / 2 + 36);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText("I / I₀ (H1→0.3)", 0, 0);
+    ctx.restore();
+
+    // raw
+    ctx.strokeStyle = "#8a939c";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    let started = false;
+    for (let i = 0; i < aligned.x.length; i++) {
+      if (!Number.isFinite(aligned.raw[i])) {
+        started = false;
+        continue;
+      }
+      const px = X(aligned.x[i]);
+      const py = Y(aligned.raw[i]);
+      if (!started) {
+        ctx.moveTo(px, py);
+        started = true;
+      } else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+
+    // stair
+    ctx.strokeStyle = "#c44536";
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    started = false;
+    for (let i = 0; i < aligned.x.length; i++) {
+      if (!Number.isFinite(aligned.stair[i])) {
+        started = false;
+        continue;
+      }
+      const px = X(aligned.x[i]);
+      const py = Y(aligned.stair[i]);
+      if (!started) {
+        ctx.moveTo(px, py);
+        started = true;
+      } else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+
   function drawPlot(canvas, tail, stage, title) {
     const ctx = canvas.getContext("2d");
     const dpr = window.devicePixelRatio || 1;
@@ -317,6 +524,13 @@
       drawPlot(canvas, tail, lastResult.afterSplit, `After split · K=${lastResult.afterSplit.stairNum}`);
     } else if (name === "merge") {
       drawPlot(canvas, tail, lastResult.afterMerge, `After merge · K=${lastResult.afterMerge.stairNum}`);
+    } else if (name === "aligned") {
+      const aligned = buildAlignedView(tail, lastResult.afterEnd);
+      drawAlignedPlot(
+        canvas,
+        aligned,
+        `Aligned · H1→${aligned.m} · equal-width · K=${aligned.k}`
+      );
     } else {
       drawPlot(canvas, tail, lastResult.afterEnd, `Final · K=${lastResult.afterEnd.stairNum}`);
     }
@@ -347,6 +561,22 @@
     } catch (e) {
       reportError(e);
     }
+  }
+
+  /** Match Step-table panel height to Input (desktop side-by-side only). */
+  function syncTopPanelHeights() {
+    const input = document.querySelector(".input-bar");
+    const table = document.querySelector(".level-mid");
+    const row = document.querySelector(".top-row");
+    if (!input || !table || !row) return;
+    if (window.matchMedia("(max-width: 900px)").matches) {
+      table.style.height = "";
+      return;
+    }
+    // clear first so Input measures its natural content height
+    table.style.height = "";
+    const h = Math.ceil(input.getBoundingClientRect().height);
+    if (h > 0) table.style.height = h + "px";
   }
 
   function bindUi() {
@@ -397,6 +627,7 @@
       b.addEventListener("click", () => showStage(b.dataset.stage));
     });
     window.addEventListener("resize", () => {
+      syncTopPanelHeights();
       if (lastResult) {
         const active = document.querySelector(".tab.active");
         showStage(active ? active.dataset.stage : "final");
@@ -415,6 +646,11 @@
         showStage(active ? active.dataset.stage : "final");
       }).observe(box);
     }
+    const inputBar = document.querySelector(".input-bar");
+    if (inputBar && typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(() => syncTopPanelHeights()).observe(inputBar);
+    }
+    syncTopPanelHeights();
   }
 
   function init() {
@@ -423,6 +659,7 @@
         fillExamples();
         bindUi();
         run();
+        requestAnimationFrame(() => syncTopPanelHeights());
       })
       .catch((e) => reportError(e));
   }
