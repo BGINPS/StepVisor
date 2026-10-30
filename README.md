@@ -26,12 +26,6 @@ print(out["stair_num"], out["levels"])
 
 Requires Python ≥ 3.9 and NumPy. For `signal` + `OpenPore` (+ optional `window`), use `detect_from_read`.
 
-## Demo
-
-Online: https://BGINPS.github.io/StepVisor/  
-
-Upload a CSV → pick the current column → **Selected** (as-is) or **Enter value** (÷ OpenPore; blank = first sample).
-
 ## Citation & license
 
 See `CITATION.cff`. MIT — see `LICENSE`.
