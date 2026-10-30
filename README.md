@@ -3,7 +3,7 @@ Plateau detection for nanopore peptide ionic-current signals (split â†’ merge â†
 | | |
 |---|---|
 | **Repository** | https://github.com/BGINPS/StepVisor |
-| **Demo** | https://BGINPS.github.io/StepVisor/ |
+| **Demo** | https://JiangShizhe.github.io/StepVisor/ |
 | **Version** | 1.0.0 |
 
 ## Python
