@@ -6,7 +6,6 @@
 |---|---|
 | **Name** | **StepVisor** (method + software; one brand) |
 | **Release** | **StepVisor v1.0** (algorithm + browser visualization) |
-| **Repository** | https://github.com/JiangShizhe/StepVisor |
 | **Interactive demo** | https://JiangShizhe.github.io/StepVisor/ |
 | **Version** | **1.0.0** |
 
