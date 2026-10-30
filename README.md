@@ -68,13 +68,17 @@ python -m http.server 8080 --directory docs
 Open http://127.0.0.1:8080
 
 1. Load a built-in example or upload a CSV  
-2. Click **Run** (v1.0 uses fixed defaults; no parameter panel)  
-3. Inspect **Raw → After split → After merge → Final → Aligned**
+2. If uploading: a small dialog asks which column to use, and optionally an OpenPore value  
+   (**Selected** = use the column as-is; **Enter value** = divide by OpenPore; leave blank to use the column’s first sample)  
+3. Click **Run** (v1.0 uses fixed defaults; no parameter panel)  
+4. Inspect **Raw → After split → After merge → Final → Aligned**
    (`Aligned` = H1→0.3 height scaling + equal-width plateau index, for cross-read shape comparison)
 
 ### CSV input
 
-Recommended — normalized current:
+Any numeric CSV with a header row works. After upload, pick the current column in the dialog.
+
+Examples:
 
 ```csv
 I_I0
@@ -82,13 +86,13 @@ I_I0
 0.261539
 ```
 
-Also accepted — raw current + OpenPore (`signal / OpenPore` computed in the page):
-
 ```csv
-signal,OpenPore
-120.3,150.0
-119.8,150.0
+sample_index,signal_pA
+0,214.5
+1,205.1
 ```
+
+For raw current (pA), choose **Enter value** and leave OpenPore blank to divide by the first sample, or type an OpenPore value.
 
 ---
 

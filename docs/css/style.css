@@ -438,3 +438,106 @@ footer {
   color: var(--muted);
   font-size: 0.92rem;
 }
+
+/* —— CSV column / OpenPore picker modal —— */
+.modal[hidden] {
+  display: none !important;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 35, 48, 0.35);
+}
+
+.modal-card {
+  position: relative;
+  z-index: 1;
+  width: min(26rem, 100%);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: 0 12px 40px rgba(26, 35, 48, 0.18);
+  padding: 1rem 1.1rem 1.05rem;
+}
+
+.modal-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.modal-hint {
+  margin: 0 0 0.85rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  word-break: break-all;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-bottom: 0.85rem;
+}
+
+.modal-field select,
+.modal-radio select,
+.modal-radio input[type="number"] {
+  font: inherit;
+  font-size: 0.92rem;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  max-width: 100%;
+}
+
+.modal-fieldset {
+  margin: 0 0 1rem;
+  padding: 0.55rem 0.65rem 0.65rem;
+  border: 1px solid var(--line);
+}
+
+.modal-fieldset legend {
+  padding: 0 0.25rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.modal-radio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.45rem;
+  font-size: 0.88rem;
+  margin: 0.35rem 0;
+  cursor: pointer;
+}
+
+.modal-radio input[type="number"] {
+  width: 6.5rem;
+}
+
+.modal-radio select {
+  min-width: 8rem;
+  flex: 1;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

@@ -10,9 +10,38 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;650&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="css/style.css?v=20261029a" />
+    <link rel="stylesheet" href="css/style.css?v=20261030a" />
   </head>
   <body>
+    <!-- Column / OpenPore picker (shown after CSV upload) -->
+    <div id="csv-modal" class="modal" hidden>
+      <div class="modal-backdrop" data-csv-dismiss></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="csv-modal-title">
+        <h3 id="csv-modal-title">Choose CSV column</h3>
+        <p class="modal-hint" id="csv-modal-file"></p>
+        <label class="modal-field">
+          Current / signal column
+          <select id="csv-col-signal"></select>
+        </label>
+        <fieldset class="modal-fieldset">
+          <legend>OpenPore</legend>
+          <label class="modal-radio">
+            <input type="radio" name="csv-norm" value="none" checked />
+            Selected
+          </label>
+          <label class="modal-radio">
+            <input type="radio" name="csv-norm" value="divide" />
+            Enter value
+            <input id="csv-op-manual" type="number" step="any" placeholder="empty = first value" />
+          </label>
+        </fieldset>
+        <div class="modal-actions">
+          <button type="button" class="secondary" data-csv-dismiss>Cancel</button>
+          <button type="button" id="csv-modal-ok">Use selection</button>
+        </div>
+      </div>
+    </div>
+
     <div class="wrap">
       <header>
         <h1>StepVisor <span style="font-weight:500;font-size:0.72em;opacity:0.75">v1.0</span></h1>
@@ -29,7 +58,7 @@
                 <select id="example"></select>
               </label>
               <div class="field field-file">
-                <span class="field-label">Or upload CSV (<code>I_I0</code>)</span>
+                <span class="field-label">Or upload CSV</span>
                 <div class="file-picker">
                   <span class="file-btn-wrap">
                     <input id="file" type="file" accept=".csv,text/csv" />
@@ -99,6 +128,6 @@
     <script src="js/detect.js?v=20261026a"></script>
     <script src="js/examples-fallback.js?v=20261029a"></script>
     <script src="js/examples-data.js?v=20261026a"></script>
-    <script src="js/app.js?v=20261029a"></script>
+    <script src="js/app.js?v=20261030a"></script>
   </body>
 </html>

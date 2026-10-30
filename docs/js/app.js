@@ -6,6 +6,7 @@
 
   let uploadedSignal = null;
   let lastResult = null;
+  let pendingCsv = null; // { fileName, headers, rows } while modal is open
 
   function reportError(msg) {
     const err = msg instanceof Error ? msg : new Error(String(msg));
@@ -100,49 +101,159 @@
     return ex.signal;
   }
 
-  function parseCsvText(text) {
-    const lines = text.trim().split(/\r?\n/);
+  function splitCsvLine(line) {
+    // simple CSV split (no quoted-comma support needed for our demo files)
+    return line.split(",").map((s) => s.trim());
+  }
+
+  function looksLikeHeader(cells) {
+    if (!cells.length) return false;
+    const joined = cells.join(",");
+    return /[a-zA-Z_]/.test(joined.replace(/[,.\d\s\-e+]/gi, ""));
+  }
+
+  /** Parse raw CSV text into { headers, rows } (rows = array of number|null per cell). */
+  function parseCsvTable(text) {
+    const lines = String(text)
+      .replace(/^\uFEFF/, "")
+      .trim()
+      .split(/\r?\n/)
+      .filter((ln) => ln.trim().length);
     if (!lines.length) throw new Error("Empty CSV");
-    const header = lines[0].toLowerCase();
-    let start = 0;
-    let col = 0;
-    let mode = "first";
-    if (/[a-z_]/.test(header.replace(/[,.\d\s\-e+]/gi, ""))) {
-      start = 1;
-      const cols = lines[0].split(",").map((s) => s.trim());
-      const iI0 = cols.findIndex((c) => c === "I_I0" || c === "i_i0");
-      const iSig = cols.findIndex((c) => c.toLowerCase() === "signal");
-      const iOp = cols.findIndex((c) => c.toLowerCase() === "openpore" || c === "OpenPore");
-      if (iI0 >= 0) {
-        col = iI0;
-        mode = "i0";
-      } else if (iSig >= 0 && iOp >= 0) {
-        mode = "raw";
-      } else {
-        col = 0;
-        mode = "first";
-      }
-    }
-    const out = [];
-    if (mode === "raw") {
-      const cols = lines[0].split(",").map((s) => s.trim());
-      const iSig = cols.findIndex((c) => c.toLowerCase() === "signal");
-      const iOp = cols.findIndex((c) => c.toLowerCase() === "openpore");
-      for (let i = start; i < lines.length; i++) {
-        const p = lines[i].split(",");
-        const s = Number(p[iSig]);
-        const o = Number(p[iOp]);
-        if (Number.isFinite(s) && Number.isFinite(o) && o !== 0) out.push(s / o);
-      }
+    const first = splitCsvLine(lines[0]);
+    let headers;
+    let dataStart;
+    if (looksLikeHeader(first)) {
+      headers = first.map((h, i) => h || `col_${i + 1}`);
+      dataStart = 1;
     } else {
-      for (let i = start; i < lines.length; i++) {
-        const p = lines[i].split(",");
-        const v = Number(p[col]);
-        if (Number.isFinite(v)) out.push(v);
-      }
+      headers = first.map((_, i) => `col_${i + 1}`);
+      dataStart = 0;
     }
-    if (!out.length) throw new Error("No numeric samples in CSV");
-    return out;
+    const rows = [];
+    for (let i = dataStart; i < lines.length; i++) {
+      const parts = splitCsvLine(lines[i]);
+      const row = headers.map((_, j) => {
+        const v = Number(parts[j]);
+        return Number.isFinite(v) ? v : null;
+      });
+      rows.push(row);
+    }
+    if (!rows.length) throw new Error("No data rows in CSV");
+    return { headers, rows };
+  }
+
+  function guessSignalCol(headers) {
+    const lower = headers.map((h) => h.toLowerCase());
+    const prefs = ["i_i0", "i/i0", "signal", "signal_pa", "current(pa)", "current", "current_pa"];
+    for (const p of prefs) {
+      const i = lower.indexOf(p);
+      if (i >= 0) return i;
+    }
+    // loose contains
+    for (let i = 0; i < lower.length; i++) {
+      if (/i_?i0|signal|current/.test(lower[i])) return i;
+    }
+    return 0;
+  }
+
+  function guessNormMode(headers, signalIdx) {
+    const h = String(headers[signalIdx] || "").toLowerCase();
+    // already normalized → Selected; otherwise ÷ OpenPore (blank input = first value)
+    if (h === "i_i0" || h === "i/i0") return "none";
+    return "divide";
+  }
+
+  function buildSignalFromTable(table, opts) {
+    const { headers, rows } = table;
+    const sigIdx = Number(opts.signalIdx);
+    if (!Number.isInteger(sigIdx) || sigIdx < 0 || sigIdx >= headers.length) {
+      throw new Error("Invalid signal column");
+    }
+    const raw = rows.map((r) => r[sigIdx]).filter((v) => v != null && Number.isFinite(v));
+    if (!raw.length) throw new Error("No numeric samples in selected column");
+
+    const mode = opts.normMode || "none";
+    if (mode === "none") return raw;
+    if (mode !== "divide") throw new Error("Unknown OpenPore mode");
+
+    const typed = String(opts.manualOpenPore ?? "").trim();
+    let openPore;
+    if (typed === "") {
+      openPore = raw[0]; // empty → first value
+    } else {
+      openPore = Number(typed);
+    }
+    if (!Number.isFinite(openPore) || openPore === 0) {
+      throw new Error("OpenPore must be a non-zero number");
+    }
+    return raw.map((v) => v / openPore);
+  }
+
+  function fillSelect(sel, headers, selectedIdx) {
+    sel.innerHTML = "";
+    headers.forEach((h, i) => {
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = h;
+      if (i === selectedIdx) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  }
+
+  function setNormMode(mode) {
+    const radios = document.querySelectorAll('input[name="csv-norm"]');
+    radios.forEach((r) => {
+      r.checked = r.value === mode;
+    });
+  }
+
+  function getNormMode() {
+    const checked = document.querySelector('input[name="csv-norm"]:checked');
+    return checked ? checked.value : "none";
+  }
+
+  function openCsvModal(table, fileName) {
+    pendingCsv = { fileName, headers: table.headers, rows: table.rows };
+    const modal = $("csv-modal");
+    const sigSel = $("csv-col-signal");
+    const fileHint = $("csv-modal-file");
+    const opInput = $("csv-op-manual");
+    const sigIdx = guessSignalCol(table.headers);
+    fillSelect(sigSel, table.headers, sigIdx);
+    setNormMode(guessNormMode(table.headers, sigIdx));
+    if (opInput) opInput.value = "";
+    if (fileHint) fileHint.textContent = fileName + ` · ${table.rows.length.toLocaleString()} rows · ${table.headers.length} cols`;
+    modal.hidden = false;
+  }
+
+  function closeCsvModal() {
+    const modal = $("csv-modal");
+    if (modal) modal.hidden = true;
+    pendingCsv = null;
+  }
+
+  function applyCsvModalSelection(setFileUi) {
+    if (!pendingCsv) throw new Error("No CSV pending");
+    const sigIdx = Number($("csv-col-signal").value);
+    const normMode = getNormMode();
+    const typed = String(($("csv-op-manual") && $("csv-op-manual").value) || "").trim();
+    const opts = {
+      signalIdx: sigIdx,
+      normMode,
+      manualOpenPore: typed,
+    };
+    const signal = buildSignalFromTable(pendingCsv, opts);
+    const name = pendingCsv.fileName;
+    const colName = pendingCsv.headers[sigIdx];
+    closeCsvModal();
+    uploadedSignal = signal;
+    let normNote = "Selected";
+    if (normMode === "divide") {
+      normNote = typed === "" ? "÷ first value" : `÷ ${typed}`;
+    }
+    setFileUi(name, `${name} · ${colName} (${normNote}) · ${signal.length.toLocaleString()} pts`);
+    run();
   }
 
   function readParams() {
@@ -597,11 +708,12 @@
       const reader = new FileReader();
       reader.onload = () => {
         try {
-          uploadedSignal = parseCsvText(String(reader.result));
-          setFileUi(f.name, `${f.name} (${uploadedSignal.length} pts)`);
-          run();
+          clearError();
+          const table = parseCsvTable(String(reader.result));
+          openCsvModal(table, f.name);
         } catch (e) {
           uploadedSignal = null;
+          pendingCsv = null;
           setFileUi("No file chosen", "Parse error");
           reportError(e);
         }
@@ -610,9 +722,41 @@
     });
     $("clear-file").addEventListener("click", () => {
       uploadedSignal = null;
+      pendingCsv = null;
+      closeCsvModal();
       $("file").value = "";
       setFileUi("No file chosen", "No file — using example");
       run();
+    });
+
+    const csvOk = $("csv-modal-ok");
+    if (csvOk) {
+      csvOk.addEventListener("click", () => {
+        try {
+          clearError();
+          applyCsvModalSelection(setFileUi);
+        } catch (e) {
+          reportError(e);
+        }
+      });
+    }
+    document.querySelectorAll("[data-csv-dismiss]").forEach((el) => {
+      el.addEventListener("click", () => {
+        closeCsvModal();
+        // keep file input value so user can re-open same file after changing mind via Clear
+        if (!uploadedSignal) {
+          $("file").value = "";
+          setFileUi("No file chosen", "No file — using example");
+        }
+      });
+    });
+    document.querySelectorAll('input[name="csv-norm"]').forEach((r) => {
+      r.addEventListener("change", () => {
+        if (r.value === "divide") {
+          const inp = $("csv-op-manual");
+          if (inp) inp.focus();
+        }
+      });
     });
     $("example").addEventListener("change", () => {
       uploadedSignal = null;
